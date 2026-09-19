@@ -1,3 +1,5 @@
+import katex from '../vendor/katex/katex.mjs';
+import { stepFormulas } from './stepFormulas.js';
 const number = (value) => new Intl.NumberFormat('es-MX', { maximumSignificantDigits: 10, notation: value !== 0 && Math.abs(value) < 1e-6 ? 'scientific' : 'standard' }).format(value);
 
 /** Explica el resultado vigente; no atribuye una solución simbólica al método numérico. */
@@ -43,8 +45,16 @@ export function solutionSteps(result, preset) {
 
 export function renderSolutionSteps(result, preset) {
   const list = document.querySelector('#solution-steps'); list.replaceChildren();
-  for (const step of solutionSteps(result, preset)) {
+  const formatted = stepFormulas(result, preset);
+  for (const [index, step] of solutionSteps(result, preset).entries()) {
     const li = document.createElement('li'), title = document.createElement('h4'), text = document.createElement('p');
-    title.textContent = step.title; text.textContent = step.text; li.append(title, text); list.append(li);
+    title.textContent = step.title; text.textContent = formatted[index].text; li.append(title, text);
+    for (const formula of formatted[index].math) {
+      const math = document.createElement('div'); math.className = 'step-math math-scroll';
+      math.tabIndex = 0; math.setAttribute('role', 'region'); math.setAttribute('aria-label', `Fórmula desplazable: ${step.title}`);
+      katex.render(formula, math, { displayMode: true, throwOnError: true, trust: false, output: 'htmlAndMathml', maxExpand: 1000 });
+      li.append(math);
+    }
+    list.append(li);
   }
 }

@@ -54,6 +54,9 @@ En física añade momentos, centroides e inercias; en los presets incluye la
 referencia analítica. Se puede plegar con clic o teclado. No es un integrador
 simbólico automático. `js/solutionSteps.js` genera este desglose y
 `tests/steps-check.mjs` comprueba los doce presets, móvil y recuperación de errores.
+`js/stepFormulas.js` presenta los cálculos con KaTeX: fracciones, sumatorias,
+subíndices y sustituciones numéricas. Las fórmulas incluyen MathML y desplazamiento
+horizontal por teclado en pantallas pequeñas; la entrada se transforma desde el AST validado.
 
 Selecciona un caso o escribe `f(x,y)` y elige el tipo de región:
 

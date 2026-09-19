@@ -7,3 +7,5 @@
 
 
 #solution{margin:0 0 22px;padding:16px;overflow:visible}#solution summary{color:#78e5cf;font-weight:600}#solution-steps{padding-left:24px}#solution-steps li{padding:4px 0 12px}#solution-steps h4{font-size:14px;margin:12px 0 6px;color:#edf3fa}#solution-steps p{margin:0;line-height:1.7}
+
+#solution .step-math{margin:10px 0;padding:14px 12px;background:#0b1728;border-left:2px solid #376c70;border-radius:0 6px 6px 0;overflow-wrap:normal}#solution .step-math .katex{font-size:1.12em}#solution-steps li+li{border-top:1px solid #273b50;padding-top:12px}#solution-steps h4{font-size:15px}#solution .step-math:focus-visible{outline:2px solid #78e5cf;outline-offset:2px}
