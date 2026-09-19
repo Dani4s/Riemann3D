@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d30">
+  <title>Riemann3D · Explorador espacial</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./vendor/katex/katex.min.css">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js", "three/addons/controls/OrbitControls.js": "./vendor/three/OrbitControls.js" } }
+  </script>
+</head>
+<body>
+  <header><a class="brand" href="./"><span class="brand-mark">∫∫</span> Riemann<span>3D</span></a><span class="stage">SEMANA 06 <span> / Aplicaciones físicas</span></span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">LABORATORIO DE CÁLCULO VECTORIAL</p><h1>De una suma a un modelo físico.</h1><p>Explora integrales, volúmenes y láminas con densidad. Compara sus aproximaciones y comprende cada celda.</p></section>
+    <section class="calculator-panel" aria-labelledby="calculator-title">
+      <div class="calculator-input">
+        <p class="eyebrow">FUNCIÓN Y DOMINIO</p><h2 id="calculator-title">Integral doble</h2>
+        <label for="preset">Caso de referencia</label>
+        <select id="preset"><option value="">Entrada personalizada</option></select>
+        <form id="calculator" novalidate>
+          <label for="model">Modelo</label><select id="model" name="model"><option value="integral">Integral firmada</option><option value="solid">Sólido bajo z=f · densidad uniforme</option><option value="lamina">Lámina plana · densidad superficial ρ</option></select>
+          <label id="expression-label" for="expression">Función f(x, y)</label><input id="expression" name="expression" value="x+y" maxlength="256" aria-describedby="expression-help" autocomplete="off" spellcheck="false">
+          <p id="expression-help" class="help">Usa x, y, pi, e; + − * / ^ y sin, cos, tan, sqrt, abs, exp, log (logaritmo natural). Ángulos en radianes.</p>
+          <label for="region-type">Tipo de región</label>
+          <select id="region-type" name="regionType"><option value="rectangle">Rectangular · límites constantes</option><option value="typeI">Tipo I · y entre funciones de x</option><option value="typeII">Tipo II · x entre funciones de y</option><option value="polar">Polar · disco o sector anular</option></select>
+          <fieldset><legend id="region-description">D = [a,b] × [c,d]</legend><div class="bounds">
+            <label id="a-field" for="a">a · X mínimo<input id="a" name="a" type="number" step="any" value="0"></label>
+            <label id="b-field" for="b">b · X máximo<input id="b" name="b" type="number" step="any" value="2"></label>
+            <label id="c-field" for="c">c · Y mínimo<input id="c" name="c" type="number" step="any" value="0"></label>
+            <label id="d-field" for="d">d · Y máximo<input id="d" name="d" type="number" step="any" value="1"></label>
+          </div></fieldset>
+          <fieldset id="variable-bounds" hidden><legend>Límites interiores</legend>
+            <label id="lower-label" for="lower">Límite inferior</label><input id="lower" name="lower" value="0" maxlength="256" autocomplete="off" spellcheck="false" aria-describedby="boundary-help">
+            <label id="upper-label" for="upper">Límite superior</label><input id="upper" name="upper" value="1" maxlength="256" autocomplete="off" spellcheck="false" aria-describedby="boundary-help">
+            <p id="boundary-help" class="help"></p>
+            <p class="help">Los límites pueden coincidir en los extremos exteriores. Se rechazan cruces y franjas degeneradas detectados en el interior. La comprobación usa muestras y no certifica funciones arbitrarias entre ellas.</p>
+          </fieldset>
+          <fieldset id="polar-bounds" hidden><legend>Límites polares</legend>
+            <div class="bounds"><label for="rMin">r mínimo<input id="rMin" name="rMin" type="number" min="0" step="any" value="0"></label><label for="rMax">r máximo<input id="rMax" name="rMax" type="number" min="0" step="any" value="2"></label>
+            <label for="thetaMin">θ inicial (rad)<input id="thetaMin" name="thetaMin" value="0" maxlength="256" autocomplete="off"></label><label for="thetaMax">θ final (rad)<input id="thetaMax" name="thetaMax" value="2*pi" maxlength="256" autocomplete="off"></label></div>
+            <p class="help">Ángulos en radianes: admite pi, pi/2 o 2*pi. Máximo una vuelta; radios no negativos.</p>
+            <label for="coordinates">Variables de la función</label><select id="coordinates" name="coordinates"><option value="cartesian">f(x,y) · evaluar en x=r cosθ, y=r sinθ</option><option value="polar">f(r,θ) · usar r y theta (o θ)</option></select>
+            <p class="help">El jacobiano r se multiplica automáticamente. Introduce sólo la función, sin añadir otro factor r.</p>
+          </fieldset>
+          <label for="resolution">Resolución de la partición · <output id="resolution-label" for="resolution">32 × 32</output></label>
+          <input id="resolution" name="resolution" type="range" min="1" max="128" step="1" value="32" aria-describedby="resolution-help">
+          <p id="resolution-help" class="help">De 1 a 128 por eje. Al mover el control, el cálculo y los prismas se actualizan tras una breve pausa.</p>
+          <button type="submit">Calcular aproximación <span aria-hidden="true">→</span></button>
+        </form>
+      </div>
+      <div class="calculator-results">
+        <p class="eyebrow">RESULTADO NUMÉRICO</p>
+        <p id="calculation-status" role="status" aria-live="polite">Pulsa Calcular para evaluar la función.</p>
+        <p id="calculation-error" role="alert"></p>
+        <div id="calculation-output" hidden>
+          <p id="integral-description"></p><p class="result-label">Aproximación por punto medio</p><output id="approximation"></output>
+          <p id="partition-description"></p><div id="sum-formula" class="math-scroll" tabindex="0" role="region" aria-label="Fórmula de punto medio desplazable"></div>
+          <p id="exact-description"></p><p id="interpretation" class="notice"></p>
+          <section id="physical-output" hidden aria-labelledby="physical-title"><h3 id="physical-title">Magnitudes físicas</h3><p id="physical-note"></p><div id="physical-formula" class="math-scroll" tabindex="0" role="region" aria-label="Fórmulas físicas desplazables"></div><div class="table-scroll" tabindex="0" role="region" aria-label="Magnitudes físicas desplazables"><table><caption>Modelo seleccionado · aproximaciones por punto medio</caption><thead><tr><th>Magnitud</th><th>Aproximación</th><th>Unidad</th><th>Referencia exacta</th><th>Error absoluto</th></tr></thead><tbody id="physical-values"></tbody></table></div></section>
+        </div>
+        <p class="help">Se comprueban los puntos muestreados. Las singularidades entre muestras pueden pasar inadvertidas; una suma finita no demuestra que la integral exista.</p>
+      </div>
+    </section>
+    <div class="workspace">
+      <aside>
+        <p class="eyebrow">03 / PARTICIÓN DE RIEMANN</p><h2>El modelo, celda a celda</h2>
+        <p id="cell-explanation">Cada celda tiene área ΔA y altura f evaluada en su punto de muestreo.</p>
+        <div id="visual-model-note" class="notice">Positivos sobre XY; negativos debajo. Los tonos alternos distinguen celdas sin reducir su base. Escala real, sin exageración vertical.</div>
+        <p id="region-visual-note" class="help">El contorno dorado muestra la región de integración.</p>
+        <label class="surface-option"><input id="surface-toggle" type="checkbox"> Superficie entre muestras</label>
+        <p class="help">Interpolación de referencia entre centros, no superficie exacta. Requiere n ≥ 2 (n ≥ 3 para una vuelta polar completa); no se extiende al borde de la región.</p>
+        <h3>Referencia de ejes</h3><ul class="legend"><li><i class="x"></i><strong>X</strong> Primera coordenada</li><li><i class="y"></i><strong>Y</strong> Segunda coordenada</li><li><i class="z"></i><strong>Z</strong> Altura</li></ul>
+        <h3>Explorar la escena</h3><p class="help">Arrastra para girar. Usa la rueda o pellizca para acercarte. Clic derecho y arrastre para desplazar.</p>
+        <p class="help">Con la escena enfocada: flechas para girar, + / − para acercar y R para restablecer.</p>
+        <button id="reset" disabled>Restablecer cámara <span aria-hidden="true">↗</span></button>
+      </aside>
+      <section class="scene-panel" aria-label="Visualizador tridimensional">
+        <div class="scene-heading"><span>VISTA PERSPECTIVA</span><span id="status" role="status">Preparando escena…</span></div>
+        <div id="viewport" aria-label="Escena de prismas calculados con ejes X, Y y Z"></div>
+        <div class="scene-footer"><span>XY · Plano base</span><span id="scene-summary">Sin resultado vigente</span></div>
+      </section>
+    </div>
+    <section id="polar-mapping" class="convergence-panel" hidden aria-labelledby="mapping-title">
+      <p class="eyebrow">DEL PARÁMETRO AL PLANO</p><h2 id="mapping-title">Mapeo (r, θ) → (x, y)</h2>
+      <p>x = r cosθ · y = r sinθ · J = r · ΔA = rᵢ Δr Δθ</p>
+      <label for="mapping-cell">Celda seleccionada · <output id="mapping-index" for="mapping-cell"></output></label><input id="mapping-cell" type="range" min="1" max="1" value="1" step="1">
+      <div class="mapping-plots"><figure><svg id="parameter-map" viewBox="0 0 300 220" role="img" aria-label="Rectángulo de parámetros y celda seleccionada"></svg><figcaption>Plano de parámetros (r, θ)</figcaption></figure><figure><svg id="cartesian-map" viewBox="0 0 300 220" role="img" aria-label="Celda transformada en un sector en XY"></svg><figcaption>Plano cartesiano (X, Y), vista superior</figcaption></figure></div>
+      <dl class="mapping-values"><div><dt>rᵢ</dt><dd id="mapping-r"></dd></div><div><dt>θⱼ (rad)</dt><dd id="mapping-theta"></dd></div><div><dt>x</dt><dd id="mapping-x"></dd></div><div><dt>y</dt><dd id="mapping-y"></dd></div><div><dt>Jacobiano J = rᵢ</dt><dd id="mapping-jacobian"></dd></div><div><dt>Área ΔA</dt><dd id="mapping-area"></dd></div><div><dt>Contribución f · ΔA</dt><dd id="mapping-contribution"></dd></div></dl>
+      <p id="mapping-area-formula"></p><p class="help">Cada rectángulo de parámetros se convierte en un sector. Para estos límites radiales constantes, rᵢ Δr Δθ coincide con el área del sector anular; sus arcos dibujados son aproximaciones. En láminas, f representa ρ y f · ΔA es masa; en sólidos, f es altura.</p>
+    </section>
+    <section class="convergence-panel" aria-labelledby="convergence-title">
+      <p class="eyebrow">REFINAR PARA COMPARAR</p><h2 id="convergence-title">Tabla de convergencia</h2>
+      <p id="convergence-status" role="status">En espera del cálculo.</p>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Tabla de convergencia desplazable">
+        <table><caption>Regla del punto medio · n = 4, 8, 16, 32, 64</caption><thead><tr><th scope="col">n</th><th scope="col">Celdas</th><th scope="col">Aproximación Iₙ</th><th id="error-heading" scope="col">Error / indicador</th><th scope="col">Orden p</th><th scope="col">Tiempo (ms)</th></tr></thead><tbody id="convergence-body"></tbody></table>
+      </div>
+    </section>
+    <details><summary>Datos de la escena · alternativa textual</summary><p>Todos los puntos muestreados, áreas y contribuciones. Las alturas nulas no forman un prisma visible.</p><div class="pagination"><button id="cells-previous" type="button">Anterior</button><span id="cells-page" role="status"></span><button id="cells-next" type="button">Siguiente</button></div><table><caption>Celdas calculadas</caption><thead><tr id="cells-head"></tr></thead><tbody id="box-data"></tbody></table></details>
+  </main>
+  <footer>Riemann3D <span>Cálculo Vectorial · FES Aragón, UNAM</span><a href="./docs/presentacion/Riemann3D.pptx">Presentación</a><a href="https://github.com/Dani4s/Riemann3D">Código y documentación</a><a href="./tests/">Pruebas de escena</a></footer>
+  <noscript>Activa JavaScript para visualizar la escena.</noscript>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

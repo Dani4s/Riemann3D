@@ -1,0 +1,9 @@
+{
+  "name": "riemann3d",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Riemann3D — integrales dobles, sólidos y láminas; entrega de seis semanas",
+  "scripts": { "test": "node --test tests/*.test.js" },
+  "engines": { "node": ">=20" }
+}
