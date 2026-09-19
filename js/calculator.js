@@ -1,6 +1,7 @@
 import { PRESETS } from './presets.js';
 import { renderFormulas } from './latex.js';
 import { renderPhysicalResult } from './physicalUI.js';
+import { renderSolutionSteps } from './solutionSteps.js';
 
 export const format = (value) => new Intl.NumberFormat('es-MX', { maximumSignificantDigits: 12 }).format(value);
 
@@ -167,6 +168,7 @@ export function mountCalculator({ onResult = () => {}, onInvalidate = () => {} }
         const result = data.result;
         renderFormulas(result);
         renderPhysicalResult(result, preset?.reference);
+        renderSolutionSteps(result, preset);
         document.querySelector('.result-label').textContent = result.model === 'solid' ? 'Volumen aproximado · u³' : result.model === 'lamina' ? 'Masa aproximada · uₘ' : 'Aproximación por punto medio';
         document.querySelector('#convergence-title').textContent = result.model === 'solid' ? 'Convergencia del volumen' : result.model === 'lamina' ? 'Convergencia de la masa' : 'Tabla de convergencia';
         document.querySelector('#approximation').textContent = format(result.approximation);

@@ -48,6 +48,13 @@ funciona sin conexión a Internet. Todos los enlaces son relativos para alojamie
 
 ## Calcular una integral
 
+Al terminar, «Cómo se resolvió · paso a paso» explica el método numérico con los
+datos vigentes: dominio, partición, primer punto medio, área, evaluación y suma.
+En física añade momentos, centroides e inercias; en los presets incluye la
+referencia analítica. Se puede plegar con clic o teclado. No es un integrador
+simbólico automático. `js/solutionSteps.js` genera este desglose y
+`tests/steps-check.mjs` comprueba los doce presets, móvil y recuperación de errores.
+
 Selecciona un caso o escribe `f(x,y)` y elige el tipo de región:
 
 - Rectangular: D = [a,b] × [c,d].
