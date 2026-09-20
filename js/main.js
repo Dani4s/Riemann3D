@@ -15,6 +15,7 @@ try {
   button.disabled = false;
   button.addEventListener('click', app.reset);
   document.querySelector('#surface-toggle').addEventListener('change', (event) => app.setSurfaceVisible(event.target.checked));
+  document.querySelector('#centroid-toggle').addEventListener('change', (event) => app.setCentroidVisible(event.target.checked));
   status.textContent = 'Escena lista';
   window.addEventListener('pagehide', (event) => { if (!event.persisted) app.dispose(); });
 } catch (error) {
@@ -27,10 +28,20 @@ try {
 }
 mountCalculator({
   onInvalidate() {
+    document.querySelector('#centroid-toggle').disabled = true;
+    document.querySelector('#centroid-description').textContent = 'Sin centroide vigente. Calcula para actualizar.';
+    document.querySelector('#centroid-visibility-note').hidden = true;
     app?.clearResult(); table.setResult(null); mapping.setResult(null);
     document.querySelector('#scene-summary').textContent = 'Sin resultado vigente';
   },
   onResult(result) {
+    const centroid = result.application?.centroid;
+    document.querySelector('#centroid-toggle').disabled = !centroid || !app;
+    const coordinate = value => new Intl.NumberFormat('es-MX', { maximumFractionDigits: 5 }).format(Math.abs(value) < 0.000005 ? 0 : value);
+    document.querySelector('#centroid-description').textContent = centroid
+      ? `C ≈ (${coordinate(centroid.x)}, ${coordinate(centroid.y)}, ${coordinate(centroid.z)}) u · coordenadas (x̄, ȳ, z̄).`
+      : result.application ? 'Total muestreado cero: el centroide no está definido.' : 'Selecciona un sólido o una lámina para calcular su centroide.';
+    document.querySelector('#centroid-visibility-note').hidden = !centroid || !app;
     document.querySelector('#surface-toggle').disabled = result.model === 'lamina';
     document.querySelector('#visual-model-note').textContent = result.model === 'lamina'
       ? 'Densidad: oscuro = 0; verde claro = máximo muestreado. La escala de color se ajusta a cada cálculo. Consulta las densidades exactas de las muestras en la tabla. Toda la lámina está en z=0.'

@@ -28,6 +28,10 @@ cero se informa que el centroide no está definido. La comprobación por muestra
 no demuestra positividad en toda la región.
 
 Tres nuevos presets verifican caja uniforme, semicírculo y disco de masa unitaria.
+La escena marca el centroide aproximado con un punto dorado C y muestra sus
+coordenadas junto al control «Mostrar centroide C». El punto se dibuja a través
+de la superficie para localizar centroides interiores. Su tamaño es ilustrativo.
+Puede ocultarse; no aparece en integrales firmadas ni cuando el total es cero.
 Se completan así los seis casos exigidos por el plan, con doce presets en total.
 La convergencia sigue la integral principal (volumen o masa en física); la tabla
 física muestra las referencias y errores de centroides e inercias cuando se conocen.

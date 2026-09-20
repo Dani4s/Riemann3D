@@ -91,10 +91,10 @@ try {
   if (!(await page.locator('#scene-summary').innerText()).includes('16384')) throw new Error('Región variable no admite n=128');
   await page.locator('#resolution').fill('32'); await completion.waitFor();
   await page.waitForFunction(() => document.querySelector('#convergence-body').children.length === 5);
-  await page.locator('details summary').click();
+  await page.getByText('Datos de la escena · alternativa textual', { exact: true }).click();
   await page.locator('#cells-next').click();
   if (!(await page.locator('#cells-page').innerText()).startsWith('33')) throw new Error('Paginación de celdas incorrecta');
-  await page.locator('details summary').click();
+  await page.getByText('Datos de la escena · alternativa textual', { exact: true }).click();
   console.log('PASS: Tipo I/II, seis presets, límites variables inválidos, recuperación, n=128 y paginación.');
   for (const [id, expected] of [['polar-paraboloid', 8 * Math.PI], ['polar-hemisphere', 2 * Math.PI / 3], ['polar-sector', 3 * Math.PI / 4]]) {
     await page.selectOption('#preset', id);
@@ -143,10 +143,10 @@ try {
   const after = await canvas.screenshot();
   if (before.equals(after)) throw new Error('Arrastrar no cambió el renderizado');
   await page.getByRole('button', { name: /Restablecer/ }).click();
-  await mkdir('docs/screenshots', { recursive: true });
-  await page.screenshot({ path: 'docs/screenshots/week5-desktop.png', fullPage: true });
+  const screenshotDir = process.env.SCREENSHOT_DIR || 'docs/screenshots'; await mkdir(screenshotDir, { recursive: true });
+  await page.screenshot({ path: screenshotDir + '/week5-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.screenshot({ path: 'docs/screenshots/week5-mobile.png', fullPage: true });
+  await page.screenshot({ path: screenshotDir + '/week5-mobile.png', fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   if (overflow) throw new Error('Desbordamiento horizontal en móvil');
   await page.goto(`${origin}/tests/`);
@@ -159,3 +159,4 @@ try {
 } finally {
   await browser.close();
 }
+
