@@ -48,6 +48,13 @@ funciona sin conexión a Internet. Todos los enlaces son relativos para alojamie
 
 ## Calcular una integral
 
+Pulsa el campo de función o densidad (o Enter con el campo enfocado) para abrir
+la calculadora matemática. Incluye vista previa KaTeX, teclado de números,
+variables, π, e, raíces, potencias y funciones. Selecciona texto para reemplazarlo
+o envolverlo con una función. Aplicar actualiza la entrada; Cancelar o Escape
+conservan el valor anterior. El cálculo de dominio y positividad se ejecuta al
+pulsar Calcular. El editor usa el mismo validador de expresiones de la aplicación.
+
 Al terminar, «Cómo se resolvió · paso a paso» explica el método numérico con los
 datos vigentes: dominio, partición, primer punto medio, área, evaluación y suma.
 En física añade momentos, centroides e inercias; en los presets incluye la

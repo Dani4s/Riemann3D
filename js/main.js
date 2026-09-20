@@ -1,6 +1,7 @@
 import { mountCalculator } from './calculator.js';
 import { mountCellTable } from './ui.js';
 import { mountPolarMapping } from './polarMapping.js';
+import { mountExpressionEditor } from './expressionEditor.js';
 
 const table = mountCellTable();
 const mapping = mountPolarMapping();
@@ -45,3 +46,4 @@ mountCalculator({
     }
   },
 });
+mountExpressionEditor();

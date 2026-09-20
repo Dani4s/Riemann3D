@@ -24,6 +24,7 @@
         <form id="calculator" novalidate>
           <label for="model">Modelo</label><select id="model" name="model"><option value="integral">Integral firmada</option><option value="solid">Sólido bajo z=f · densidad uniforme</option><option value="lamina">Lámina plana · densidad superficial ρ</option></select>
           <label id="expression-label" for="expression">Función f(x, y)</label><input id="expression" name="expression" value="x+y" maxlength="256" aria-describedby="expression-help" autocomplete="off" spellcheck="false">
+          <div id="expression-preview" class="math-scroll" tabindex="0" role="region" aria-label="Vista matemática de la expresión"></div><button id="open-expression-editor" type="button">Abrir calculadora matemática</button>
           <p id="expression-help" class="help">Usa x, y, pi, e; + − * / ^ y sin, cos, tan, sqrt, abs, exp, log (logaritmo natural). Ángulos en radianes.</p>
           <label for="region-type">Tipo de región</label>
           <select id="region-type" name="regionType"><option value="rectangle">Rectangular · límites constantes</option><option value="typeI">Tipo I · y entre funciones de x</option><option value="typeII">Tipo II · x entre funciones de y</option><option value="polar">Polar · disco o sector anular</option></select>
@@ -104,6 +105,17 @@
   </main>
   <footer>Riemann3D <span>Cálculo Vectorial · FES Aragón, UNAM</span><a href="./docs/presentacion/Riemann3D.pptx">Presentación</a><a href="https://github.com/Dani4s/Riemann3D">Código y documentación</a><a href="./tests/">Pruebas de escena</a></footer>
   <noscript>Activa JavaScript para visualizar la escena.</noscript>
+  <dialog id="expression-editor" aria-labelledby="editor-title" aria-describedby="editor-help">
+    <h2 id="editor-title">Editar densidad ρ</h2>
+    <p id="editor-help">Selecciona un fragmento para reemplazarlo o envolverlo con una función. Usa los botones o el teclado; los ángulos están en radianes.</p>
+    <div id="editor-preview" class="math-scroll" tabindex="0" role="region" aria-label="Vista previa matemática"></div>
+    <label for="expression-draft">Expresión editable</label><input id="expression-draft" maxlength="256" autocomplete="off" spellcheck="false" aria-describedby="editor-error">
+    <p id="editor-error" role="status" aria-live="polite"></p>
+    <div id="editor-keypad" aria-label="Teclado matemático"></div>
+    <div class="editor-actions"><button id="editor-backspace" type="button">⌫ Borrar</button><button id="editor-clear" type="button">Limpiar</button></div>
+    <p class="help">La vista previa comprueba la sintaxis. Pulsa Calcular después de aplicar para verificar la función en la región.</p>
+    <div class="editor-actions"><button id="editor-cancel" type="button">Cancelar</button><button id="editor-apply" type="button">Aplicar expresión</button></div>
+  </dialog>
   <script type="module" src="./js/main.js"></script>
 </body>
 </html>
