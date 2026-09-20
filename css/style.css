@@ -21,5 +21,3 @@
 :root[data-theme=rose]{--accent:#ffaac9;--accent-bg:#5a2d44;--accent-border:#ab607f;--accent-hover:#773d59;--accent-text:#ffe9f1}
 :root[data-theme=amber]{--accent:#ffd184;--accent-bg:#523e21;--accent-border:#a17d43;--accent-hover:#70532c;--accent-text:#fff2dc}
 header{gap:20px;flex-wrap:wrap}.theme-control{display:flex;align-items:center;gap:10px;font-size:12px;color:#c6d8e8}.theme-control select{font:inherit;padding:9px;border:1px solid var(--accent-border,#367c70);border-radius:7px;background:#101d30;color:var(--accent,#78e5cf);max-width:100%}@media(max-width:600px){.theme-control{width:100%;justify-content:space-between}.theme-control select{flex:1;max-width:220px}}
-
-.centroid-label{position:absolute;transform:translate(12px,-50%);pointer-events:none;z-index:2;padding:3px 7px;border:1px solid #ffdf84;border-radius:5px;background:#0b1422;color:#ffdf84;font-size:13px;font-weight:700}

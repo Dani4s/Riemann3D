@@ -12,11 +12,6 @@ export function mountScene(container, options = {}) {
   let fitState = null;
   let lastResult = null;
   let surfaceVisible = false;
-  let centroidMarker = null;
-  let centroidVisible = true;
-  const centroidLabel = document.createElement('span');
-  centroidLabel.className = 'centroid-label'; centroidLabel.hidden = true;
-  container.append(centroidLabel);
   const labels = [];
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   const canvas = renderer.domElement;
@@ -50,16 +45,7 @@ export function mountScene(container, options = {}) {
     labels.push(sprite);
   }
 
-  const render = () => {
-    renderer.render(scene, camera);
-    centroidLabel.hidden = !centroidMarker || !centroidVisible;
-    if (centroidMarker && centroidVisible) {
-      const point = centroidMarker.position.clone().project(camera);
-      centroidLabel.hidden = Math.abs(point.x) > 1 || Math.abs(point.y) > 1 || Math.abs(point.z) > 1;
-      centroidLabel.style.left = `${(point.x + 1) * container.clientWidth / 2}px`;
-      centroidLabel.style.top = `${(1 - point.y) * container.clientHeight / 2}px`;
-    }
-  };
+  const render = () => renderer.render(scene, camera);
   const reset = () => {
     if (!fitState) controls.reset();
     else {
@@ -115,7 +101,6 @@ export function mountScene(container, options = {}) {
   observer.observe(container);
   resize(); // Render bajo demanda: las cajas son estáticas.
   function clearResult() {
-    disposeMesh(centroidMarker); centroidMarker = null;
     disposeMesh(prisms);
     disposeMesh(sampleSurface);
     disposeMesh(boundaryLine);
@@ -141,15 +126,6 @@ export function mountScene(container, options = {}) {
     if (result.model !== 'lamina') for (const cell of result.cells) { minZ = Math.min(minZ, cell.value); maxZ = Math.max(maxZ, cell.value); }
     const center = new THREE.Vector3((a + b) / 2, (c + d) / 2, (minZ + maxZ) / 2);
     const radius = Math.max(new THREE.Vector3(b - a, d - c, maxZ - minZ).length() / 2, 1e-9);
-    const centroid = result.application?.centroid;
-    if (centroid) {
-      centroidMarker = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.025, 16, 12),
-        new THREE.MeshBasicMaterial({ color: '#ffdf84', depthTest: false, depthWrite: false }));
-      centroidMarker.name = 'centroid-marker'; centroidMarker.renderOrder = 20;
-      centroidMarker.position.set(centroid.x, centroid.y, centroid.z);
-      centroidMarker.visible = centroidVisible; scene.add(centroidMarker);
-      centroidLabel.textContent = 'C';
-    }
     fitState = { center, radius };
     const axisLength = Math.max(b - a, d - c, maxZ - minZ) * 1.15;
     axes.scale.setScalar(axisLength / 4);
@@ -165,7 +141,6 @@ export function mountScene(container, options = {}) {
   return {
     scene, camera, boxes, renderer, controls, reset, setResult, clearResult,
     get prisms() { return prisms; },
-    setCentroidVisible(value) { centroidVisible = Boolean(value); if (centroidMarker) centroidMarker.visible = centroidVisible; render(); },
     setSurfaceVisible(value) { surfaceVisible = value; if (sampleSurface) sampleSurface.visible = value; render(); },
     dispose() {
       observer.disconnect();
@@ -175,7 +150,6 @@ export function mountScene(container, options = {}) {
       disposeScene(scene);
       renderer.dispose();
       canvas.remove();
-      centroidLabel.remove();
     },
   };
 }

@@ -72,23 +72,7 @@ try {
   check(second.renderer.info.memory.geometries === polarGeometries, 'Cambiar sectores no acumula geometrías WebGL');
   second.clearResult();
   check(second.prisms === null, 'La malla polar se libera al invalidar');
-  const { PHYSICAL_PRESETS } = await import('../js/presets.js');
-  for (const preset of PHYSICAL_PRESETS) {
-    const physical = integrate(preset); second.setResult(physical);
-    const marker = second.scene.getObjectByName('centroid-marker'), expected = physical.application.centroid;
-    check(Boolean(marker) && marker.position.distanceTo({ x: expected.x, y: expected.y, z: expected.z }) < 1e-12, `Marcador del centroide: ${preset.name}`);
-  }
-  second.setCentroidVisible(false);
-  check(!second.scene.getObjectByName('centroid-marker').visible && fixture.querySelector('.centroid-label').hidden, 'Ocultar centroide elimina punto y etiqueta');
-  second.setCentroidVisible(true);
-  check(second.scene.getObjectByName('centroid-marker').visible, 'Mostrar centroide recupera el punto');
-  second.setResult(integrate({ ...PHYSICAL_PRESETS[0], expression: '0' }));
-  check(!second.scene.getObjectByName('centroid-marker') && fixture.querySelector('.centroid-label').hidden, 'Total cero no genera marcador');
-  second.setResult(integrate(PHYSICAL_PRESETS[0]));
-  second.setResult(integrate(RECTANGULAR_PRESETS[0]));
-  check(!second.scene.getObjectByName('centroid-marker'), 'Integral firmada elimina el centroide anterior');
   second.dispose();
-  check(!fixture.querySelector('.centroid-label'), 'Liberación elimina etiqueta del centroide');
 } catch (error) {
   check(false, error.message);
   console.error(error);
